@@ -1,56 +1,54 @@
-﻿Imports Microsoft.VisualBasic
-Imports System
+﻿Imports System
 Imports System.Collections.Generic
 Imports System.Linq
 Imports System.Web
-Imports System.Web.Mvc
-Imports DevExpress.Web.Mvc
 Imports DevExpress.XtraScheduler.Xml
 Imports DevExpressMvcApplication1.Models
 Imports DevExpressMvcApplication1.Helpers
 
 Namespace DevExpressMvcApplication1.Controllers
-	Public Class HomeController
-		Inherits Controller
-		'
-		' GET: /Home/
+    Public Class HomeController
+        Inherits Controller
 
-		Public Function Index() As ActionResult
-			Return View(SchedulerDataHelper.DataObject)
-		End Function
+        '
+        ' GET: /Home/
 
-		Public Function SchedulerPartial() As ActionResult
-			Return PartialView("SchedulerPartial", SchedulerDataHelper.DataObject)
-		End Function
+        Public Function Index() As ActionResult
+            Return View(SchedulerDataHelper.DataObject)
+        End Function
 
-		Public Function EditAppointment() As ActionResult
-			UpdateAppointment()
-			Return PartialView("SchedulerPartial", SchedulerDataHelper.DataObject)
-		End Function
+        Public Function SchedulerPartial() As ActionResult
+            Return PartialView("SchedulerPartial", SchedulerDataHelper.DataObject)
+        End Function
 
-		Public Function ContactPartial(ByVal CompanyID As Integer) As ActionResult
-			ViewBag.ContactsDataSource = SchedulerDataHelper.GetCompanyContacts(CompanyID)
-			Return PartialView("ComboboxContactPartial")
-		End Function
-		Public Function CompanyPartial() As ActionResult
-			Return PartialView("ComboboxCompanyPartial")
-		End Function
+        Public Function EditAppointment() As ActionResult
+            UpdateAppointment()
+            Return PartialView("SchedulerPartial", SchedulerDataHelper.DataObject)
+        End Function
 
-		Private Shared Sub UpdateAppointment()
-			Dim appointmnets As List(Of CustomAppointment) = TryCast(System.Web.HttpContext.Current.Session("AppointmentsList"), List(Of CustomAppointment))
-			Dim resources As List(Of CustomResource) = TryCast(System.Web.HttpContext.Current.Session("ResourcesList"), List(Of CustomResource))
+        Public Function ContactPartial(ByVal CompanyID As Integer) As ActionResult
+            ViewBag.ContactsDataSource = SchedulerDataHelper.GetCompanyContacts(CompanyID)
+            Return PartialView("ComboboxContactPartial")
+        End Function
+        Public Function CompanyPartial() As ActionResult
+            Return PartialView("ComboboxCompanyPartial")
+        End Function
 
-			Dim insertedAppts() As CustomAppointment = SchedulerExtension.GetAppointmentsToInsert(Of CustomAppointment)(SchedulerDataHelper.GetSchedulerSettings(), appointmnets, resources)
-			SchedulerDataHelper.InsertAppointments(insertedAppts)
+        Private Shared Sub UpdateAppointment()
+            Dim appointmnets As List(Of CustomAppointment) = TryCast(System.Web.HttpContext.Current.Session("AppointmentsList"), List(Of CustomAppointment))
+            Dim resources As List(Of CustomResource) = TryCast(System.Web.HttpContext.Current.Session("ResourcesList"), List(Of CustomResource))
 
-
-			Dim updatedAppts() As CustomAppointment = SchedulerExtension.GetAppointmentsToUpdate(Of CustomAppointment)(SchedulerDataHelper.GetSchedulerSettings(), appointmnets, resources)
-			SchedulerDataHelper.UpdateAppointments(updatedAppts)
-
-			Dim removedAppts() As CustomAppointment = SchedulerExtension.GetAppointmentsToRemove(Of CustomAppointment)(SchedulerDataHelper.GetSchedulerSettings(), appointmnets, resources)
-			SchedulerDataHelper.RemoveAppointments(removedAppts)
-		End Sub
+            Dim insertedAppts() As CustomAppointment = SchedulerExtension.GetAppointmentsToInsert(Of CustomAppointment)(SchedulerDataHelper.GetSchedulerSettings(), appointmnets, resources)
+            SchedulerDataHelper.InsertAppointments(insertedAppts)
 
 
-	End Class
+            Dim updatedAppts() As CustomAppointment = SchedulerExtension.GetAppointmentsToUpdate(Of CustomAppointment)(SchedulerDataHelper.GetSchedulerSettings(), appointmnets, resources)
+            SchedulerDataHelper.UpdateAppointments(updatedAppts)
+
+            Dim removedAppts() As CustomAppointment = SchedulerExtension.GetAppointmentsToRemove(Of CustomAppointment)(SchedulerDataHelper.GetSchedulerSettings(), appointmnets, resources)
+            SchedulerDataHelper.RemoveAppointments(removedAppts)
+        End Sub
+
+
+    End Class
 End Namespace

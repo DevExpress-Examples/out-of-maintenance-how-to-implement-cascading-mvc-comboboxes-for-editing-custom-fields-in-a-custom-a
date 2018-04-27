@@ -1,20 +1,15 @@
-﻿Imports Microsoft.VisualBasic
-Imports System.Collections
+﻿Imports System.Collections
 Imports System.Linq
 Imports DevExpressMvcApplication1
-Imports DevExpress.Web.Mvc
 Imports DevExpressMvcApplication1.Models
 Imports System.Collections.Generic
 Imports System.Drawing
 Imports System
 Imports System.Web
-Imports System.Web.Mvc.Html
-Imports DevExpress.XtraScheduler
-Imports DevExpress.Web
 Imports DevExpress.XtraScheduler.Xml
 
 Namespace DevExpressMvcApplication1.Helpers
-	Public Module SchedulerDataHelper
+    Public Module SchedulerDataHelper
         Public Function GetResources() As List(Of CustomResource)
             Dim resources As New List(Of CustomResource)()
             resources.Add(CustomResource.CreateCustomResource(1, "Max Fowler", Color.Yellow.ToArgb()))
@@ -43,7 +38,10 @@ Namespace DevExpressMvcApplication1.Helpers
             If HttpContext.Current.Session("CompaniesList") Is Nothing Then
                 Dim returnedResult As New List(Of Company)()
                 For i As Integer = 0 To 9
-                    returnedResult.Add(New Company() With {.CompanyID = i, .CompanyName = "Company " & i.ToString()})
+                    returnedResult.Add(New Company() With { _
+                        .CompanyID = i, _
+                        .CompanyName = "Company " & i.ToString() _
+                    })
                 Next i
                 HttpContext.Current.Session("CompaniesList") = returnedResult
             End If
@@ -58,7 +56,11 @@ Namespace DevExpressMvcApplication1.Helpers
                 Dim uniqueContactID As Integer = 0
                 For i As Integer = 0 To companies.Count - 1
                     For j As Integer = 0 To 4
-                        returnedResult.Add(New CompanyContact() With {.CompanyID = i, .ContactName = "Contact " & j & ", Company " & i, .ContactID = uniqueContactID})
+                        returnedResult.Add(New CompanyContact() With { _
+                            .CompanyID = i, _
+                            .ContactName = "Contact " & j & ", Company " & i, _
+                            .ContactID = uniqueContactID _
+                        })
                         uniqueContactID += 1
                     Next j
                 Next i
@@ -75,6 +77,7 @@ Namespace DevExpressMvcApplication1.Helpers
 
         Public ReadOnly Property DataObject() As SchedulerDataObject
             Get
+
                 Dim dataObject_Renamed As New SchedulerDataObject()
 
 
@@ -90,6 +93,7 @@ Namespace DevExpressMvcApplication1.Helpers
                 Return dataObject_Renamed
             End Get
         End Property
+
 
         Private defaultAppointmentStorage_Renamed As MVCxAppointmentStorage
         Public ReadOnly Property DefaultAppointmentStorage() As MVCxAppointmentStorage
@@ -128,6 +132,7 @@ Namespace DevExpressMvcApplication1.Helpers
             Return appointmentStorage
         End Function
 
+
         Private defaultResourceStorage_Renamed As MVCxResourceStorage
         Public ReadOnly Property DefaultResourceStorage() As MVCxResourceStorage
             Get
@@ -152,7 +157,22 @@ Namespace DevExpressMvcApplication1.Helpers
         End Function
 
         Private Function CreateAppointmentRecurrenceFormSettings(ByVal container As DevExpress.Web.ASPxScheduler.AppointmentFormTemplateContainer) As AppointmentRecurrenceFormSettings
-            Return New AppointmentRecurrenceFormSettings With {.Name = "appointmentRecurrenceForm", .Width = System.Web.UI.WebControls.Unit.Percentage(100), .IsRecurring = container.Appointment.IsRecurring, .DayNumber = container.RecurrenceDayNumber, .End = container.RecurrenceEnd, .Month = container.RecurrenceMonth, .OccurrenceCount = container.RecurrenceOccurrenceCount, .Periodicity = container.RecurrencePeriodicity, .RecurrenceRange = container.RecurrenceRange, .Start = container.Start, .WeekDays = container.RecurrenceWeekDays, .WeekOfMonth = container.RecurrenceWeekOfMonth, .RecurrenceType = container.RecurrenceType, .IsFormRecreated = container.IsFormRecreated}
+            Return New AppointmentRecurrenceFormSettings With { _
+                .Name = "appointmentRecurrenceForm", _
+                .Width = System.Web.UI.WebControls.Unit.Percentage(100), _
+                .IsRecurring = container.Appointment.IsRecurring, _
+                .DayNumber = container.RecurrenceDayNumber, _
+                .End = container.RecurrenceEnd, _
+                .Month = container.RecurrenceMonth, _
+                .OccurrenceCount = container.RecurrenceOccurrenceCount, _
+                .Periodicity = container.RecurrencePeriodicity, _
+                .RecurrenceRange = container.RecurrenceRange, _
+                .Start = container.Start, _
+                .WeekDays = container.RecurrenceWeekDays, _
+                .WeekOfMonth = container.RecurrenceWeekOfMonth, _
+                .RecurrenceType = container.RecurrenceType, _
+                .IsFormRecreated = container.IsFormRecreated _
+            }
         End Function
 
         <System.Runtime.CompilerServices.Extension> _
@@ -160,13 +180,29 @@ Namespace DevExpressMvcApplication1.Helpers
             Dim settings As New SchedulerSettings()
             settings.Name = "scheduler"
 
-            settings.InitClientAppointment = Function(sched, evargs) InitClientAppointmentMethod(sched, evargs)
+            settings.InitClientAppointment = Sub(sched, evargs)
+                evargs.Properties.Add(DevExpress.Web.ASPxScheduler.ClientSideAppointmentFieldNames.AppointmentType, evargs.Appointment.Type)
+                evargs.Properties.Add(DevExpress.Web.ASPxScheduler.ClientSideAppointmentFieldNames.Subject, evargs.Appointment.Subject)
+            End Sub
 
-            settings.PopupMenuShowing = Function(sched, evargs) PopupMenuShowingMethod(sched, evargs)
+            settings.PopupMenuShowing = Sub(sched, evargs)
+                If evargs.Menu.MenuId = SchedulerMenuItemId.AppointmentMenu Then
+                    evargs.Menu.ClientSideEvents.PopUp = "OnAppointmentMenuPopup"
+                End If
+            End Sub
 
-            settings.CallbackRouteValues = New With {Key .Controller = "Home", Key .Action = "SchedulerPartial"}
-            settings.EditAppointmentRouteValues = New With {Key .Controller = "Home", Key .Action = "EditAppointment"}
-            settings.CustomActionRouteValues = New With {Key .Controller = "Home", Key .Action = "CustomCallBackAction"}
+            settings.CallbackRouteValues = New With { _
+                Key .Controller = "Home", _
+                Key .Action = "SchedulerPartial" _
+            }
+            settings.EditAppointmentRouteValues = New With { _
+                Key .Controller = "Home", _
+                Key .Action = "EditAppointment" _
+            }
+            settings.CustomActionRouteValues = New With { _
+                Key .Controller = "Home", _
+                Key .Action = "CustomCallBackAction" _
+            }
 
             settings.Storage.Appointments.Assign(SchedulerDataHelper.DefaultAppointmentStorage)
             settings.Storage.Resources.Assign(SchedulerDataHelper.DefaultResourceStorage)
@@ -174,52 +210,50 @@ Namespace DevExpressMvcApplication1.Helpers
             settings.Storage.EnableReminders = True
             settings.GroupType = SchedulerGroupType.Resource
             settings.Views.DayView.Styles.ScrollAreaHeight = 400
-            settings.Start = DateTime.Now
+            settings.Start = Date.Now
 
-            settings.AppointmentFormShowing = Function(sender, e) AppointmentFormShowingMethod(sender, e)
+            settings.AppointmentFormShowing = Sub(sender, e)
+                Dim scheduler = TryCast(sender, MVCxScheduler)
+                If scheduler IsNot Nothing Then
+                    e.Container = New CustomAppointmentTemplateContainer(scheduler)
+                End If
+            End Sub
 
             settings.OptionsForms.RecurrenceFormName = "appointmentRecurrenceForm"
 
-            settings.OptionsForms.SetAppointmentFormTemplateContent(Function(c) SetAppointmentFormTemplateContentMethod(c, customHtml))
+            settings.OptionsForms.SetAppointmentFormTemplateContent(Sub(c)
+                Dim container = CType(c, CustomAppointmentTemplateContainer)
+                Dim modelAppointment As New ModelAppointment() With { _
+                    .ID = If(container.Appointment.Id Is Nothing, -1, CInt((container.Appointment.Id))), _
+                    .Subject = container.Appointment.Subject, _
+                    .Location = container.Appointment.Location, _
+                    .StartTime = container.Appointment.Start, _
+                    .EndTime = container.Appointment.End, _
+                    .AllDay = container.Appointment.AllDay, _
+                    .Description = container.Appointment.Description, _
+                    .EventType = CInt((container.Appointment.Type)), _
+                    .Status = Convert.ToInt32(container.Appointment.StatusKey), _
+                    .Label = Convert.ToInt32(container.Appointment.LabelKey), _
+                    .CustomInfo = container.CustomInfo, _
+                    .CompanyID = container.CompanyID, _
+                    .ContactID = container.ContactID, _
+                    .HasReminder = container.Appointment.HasReminder, _
+                    .Reminder = container.Appointment.Reminder, _
+                    .OwnerId = Convert.ToInt32(container.Appointment.ResourceId) _
+                }
+                customHtml.ViewBag.DeleteButtonEnabled = container.CanDeleteAppointment
+                TryCast(container.ResourceDataSource, ListEditItemCollection).RemoveAt(0)
+                customHtml.ViewBag.ResourceDataSource = container.ResourceDataSource
+                customHtml.ViewBag.StatusDataSource = container.StatusDataSource
+                customHtml.ViewBag.LabelDataSource = container.LabelDataSource
+                customHtml.ViewBag.AppointmentRecurrenceFormSettings = CreateAppointmentRecurrenceFormSettings(container)
+                customHtml.ViewBag.ReminderDataSource = container.ReminderDataSource
+                customHtml.ViewBag.IsBaseAppointment = container.Appointment.Type = AppointmentType.Normal OrElse container.Appointment.Type = AppointmentType.Pattern
+                customHtml.ViewBag.CompaniesDataSource = GetCompanies()
+                customHtml.ViewBag.ContactsDataSource = GetCompanyContacts(container.CompanyID)
+                customHtml.RenderPartial("CustomAppointmentFormPartial", modelAppointment)
+            End Sub)
             Return settings
-        End Function
-
-        Private Function InitClientAppointmentMethod(ByVal sched As Object, ByVal evargs As Object) As Boolean
-            evargs.Properties.Add(DevExpress.Web.ASPxScheduler.ClientSideAppointmentFieldNames.AppointmentType, evargs.Appointment.Type)
-            evargs.Properties.Add(DevExpress.Web.ASPxScheduler.ClientSideAppointmentFieldNames.Subject, evargs.Appointment.Subject)
-            Return True
-        End Function
-
-        Private Function PopupMenuShowingMethod(ByVal sched As Object, ByVal evargs As Object) As Boolean
-            If evargs.Menu.MenuId = SchedulerMenuItemId.AppointmentMenu Then
-                evargs.Menu.ClientSideEvents.PopUp = "OnAppointmentMenuPopup"
-            End If
-            Return True
-        End Function
-
-        Private Function AppointmentFormShowingMethod(ByVal sender As Object, ByVal e As Object) As Boolean
-            Dim scheduler = TryCast(sender, MVCxScheduler)
-            If scheduler IsNot Nothing Then
-                e.Container = New CustomAppointmentTemplateContainer(scheduler)
-            End If
-            Return True
-        End Function
-
-        Private Function SetAppointmentFormTemplateContentMethod(ByVal c As Object, ByVal customHtml As System.Web.Mvc.HtmlHelper) As Boolean
-            Dim container = CType(c, CustomAppointmentTemplateContainer)
-            Dim modelAppointment As New ModelAppointment() With {.ID = If(container.Appointment.Id Is Nothing, -1, CInt(Fix(container.Appointment.Id))), .Subject = container.Appointment.Subject, .Location = container.Appointment.Location, .StartTime = container.Appointment.Start, .EndTime = container.Appointment.End, .AllDay = container.Appointment.AllDay, .Description = container.Appointment.Description, .EventType = CInt(Fix(container.Appointment.Type)), .Status = Convert.ToInt32(container.Appointment.StatusKey), .Label = Convert.ToInt32(container.Appointment.LabelKey), .CustomInfo = container.CustomInfo, .CompanyID = container.CompanyID, .ContactID = container.ContactID, .HasReminder = container.Appointment.HasReminder, .Reminder = container.Appointment.Reminder, .OwnerId = Convert.ToInt32(container.Appointment.ResourceId)}
-            customHtml.ViewBag.DeleteButtonEnabled = container.CanDeleteAppointment
-            TryCast(container.ResourceDataSource, ListEditItemCollection).RemoveAt(0)
-            customHtml.ViewBag.ResourceDataSource = container.ResourceDataSource
-            customHtml.ViewBag.StatusDataSource = container.StatusDataSource
-            customHtml.ViewBag.LabelDataSource = container.LabelDataSource
-            customHtml.ViewBag.AppointmentRecurrenceFormSettings = CreateAppointmentRecurrenceFormSettings(container)
-            customHtml.ViewBag.ReminderDataSource = container.ReminderDataSource
-            customHtml.ViewBag.IsBaseAppointment = container.Appointment.Type = AppointmentType.Normal OrElse container.Appointment.Type = AppointmentType.Pattern
-            customHtml.ViewBag.CompaniesDataSource = GetCompanies()
-            customHtml.ViewBag.ContactsDataSource = GetCompanyContacts(container.CompanyID)
-            customHtml.RenderPartial("CustomAppointmentFormPartial", modelAppointment)
-            Return True
         End Function
 
         Private lastInsertedID As Integer = 0
