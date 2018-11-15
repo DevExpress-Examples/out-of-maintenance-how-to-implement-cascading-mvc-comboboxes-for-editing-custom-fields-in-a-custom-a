@@ -1,3 +1,15 @@
+<!-- default file list -->
+*Files to look at*:
+
+* [HomeController.cs](./CS/DevExpressMvcApplication1/Controllers/HomeController.cs) (VB: [HomeController.vb](./VB/DevExpressMvcApplication1/Controllers/HomeController.vb))
+* [CustomClasses.cs](./CS/DevExpressMvcApplication1/Models/CustomClasses.cs) (VB: [CustomClasses.vb](./VB/DevExpressMvcApplication1/Models/CustomClasses.vb))
+* [CustomFormHelper.cs](./CS/DevExpressMvcApplication1/Models/CustomFormHelper.cs) (VB: [CustomFormHelper.vb](./VB/DevExpressMvcApplication1/Models/CustomFormHelper.vb))
+* [SchedulerDataHelper.cs](./CS/DevExpressMvcApplication1/Models/SchedulerDataHelper.cs) (VB: [SchedulerDataHelper.vb](./VB/DevExpressMvcApplication1/Models/SchedulerDataHelper.vb))
+* [ComboboxCompanyPartial.cshtml](./CS/DevExpressMvcApplication1/Views/Home/ComboboxCompanyPartial.cshtml)
+* [ComboboxContactPartial.cshtml](./CS/DevExpressMvcApplication1/Views/Home/ComboboxContactPartial.cshtml)
+* [CustomAppointmentFormPartial.cshtml](./CS/DevExpressMvcApplication1/Views/Home/CustomAppointmentFormPartial.cshtml)
+* [SchedulerPartial.cshtml](./CS/DevExpressMvcApplication1/Views/Home/SchedulerPartial.cshtml)
+<!-- default file list end -->
 # How to implement cascading MVC ComboBoxes for editing custom fields in a custom Appointment Edit form
 
 
