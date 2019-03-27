@@ -24,6 +24,7 @@ namespace DevExpressMvcApplication1.Models {
         private string m_CustomInfo;
 
         private int m_company_id;
+
         private int m_conact_id;
 
 
@@ -46,6 +47,7 @@ namespace DevExpressMvcApplication1.Models {
         public string TimeBeforeStart { get; set; }
 
         public int CompanyID { get { return m_company_id; } set { m_company_id = value; } }
+
         public int ContactID { get { return m_conact_id; } set { m_conact_id = value; } }
 
         public CustomAppointment() {
