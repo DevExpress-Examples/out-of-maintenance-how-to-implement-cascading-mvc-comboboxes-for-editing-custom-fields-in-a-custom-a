@@ -165,15 +165,19 @@ Namespace DevExpressMvcApplication1.Models
 		Public Sub New()
 		End Sub
 
-		Public Shared Function CreateCustomAppointment(ByVal subject As String, ByVal resourceId As Object, ByVal status As Integer, ByVal label As Integer, ByVal id As Integer) As CustomAppointment
+'INSTANT VB NOTE: The variable subject was renamed since Visual Basic does not handle local variables named the same as class members well:
+'INSTANT VB NOTE: The variable status was renamed since Visual Basic does not handle local variables named the same as class members well:
+'INSTANT VB NOTE: The variable label was renamed since Visual Basic does not handle local variables named the same as class members well:
+'INSTANT VB NOTE: The variable id was renamed since Visual Basic does not handle local variables named the same as class members well:
+		Public Shared Function CreateCustomAppointment(ByVal subject_Renamed As String, ByVal resourceId As Object, ByVal status_Renamed As Integer, ByVal label_Renamed As Integer, ByVal id_Renamed As Integer) As CustomAppointment
 			Dim apt As New CustomAppointment()
-			apt.ID = id
-			apt.Subject = subject
+			apt.ID = id_Renamed
+			apt.Subject = subject_Renamed
 			apt.OwnerId = Convert.ToInt32(resourceId)
-			apt.StartTime = DateTime.Now.AddHours(id)
+			apt.StartTime = DateTime.Now.AddHours(id_Renamed)
 			apt.EndTime = apt.StartTime.AddHours(3)
-			apt.Status = status
-			apt.Label = label
+			apt.Status = status_Renamed
+			apt.Label = label_Renamed
 			Return apt
 		End Function
 	End Class
