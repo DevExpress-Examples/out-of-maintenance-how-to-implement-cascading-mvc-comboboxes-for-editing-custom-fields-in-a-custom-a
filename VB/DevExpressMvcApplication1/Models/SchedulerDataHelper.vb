@@ -1,4 +1,4 @@
-﻿Imports System.Collections
+Imports System.Collections
 Imports System.Linq
 Imports DevExpressMvcApplication1
 Imports DevExpress.Web.Mvc
@@ -11,322 +11,239 @@ Imports System.Web.Mvc.Html
 Imports DevExpress.XtraScheduler
 Imports DevExpress.Web
 Imports DevExpress.XtraScheduler.Xml
+Imports System.Runtime.CompilerServices
 
 Namespace DevExpressMvcApplication1.Helpers
-	Public Module SchedulerDataHelper
-		Public Function GetResources() As List(Of CustomResource)
-			Dim resources As New List(Of CustomResource)()
-			resources.Add(CustomResource.CreateCustomResource(1, "Max Fowler", Color.Yellow.ToArgb()))
-			resources.Add(CustomResource.CreateCustomResource(2, "Nancy Drewmore", Color.Green.ToArgb()))
-			resources.Add(CustomResource.CreateCustomResource(3, "Pak Jang", Color.LightPink.ToArgb()))
-			Return resources
-		End Function
 
-		Private myRand As New Random()
-		Public Function GetAppointments(ByVal resources As List(Of CustomResource)) As List(Of CustomAppointment)
-			Dim appointments As New List(Of CustomAppointment)()
-			For Each item As CustomResource In resources
-				Dim subjPrefix As String = item.Name & "'s "
-'INSTANT VB WARNING: An assignment within expression was extracted from the following statement:
-'ORIGINAL LINE: appointments.Add(CustomAppointment.CreateCustomAppointment(subjPrefix + "meeting", item.ResID, 2, 5, lastInsertedID++));
-				appointments.Add(CustomAppointment.CreateCustomAppointment(subjPrefix & "meeting", item.ResID, 2, 5, lastInsertedID))
-				lastInsertedID += 1
-'INSTANT VB WARNING: An assignment within expression was extracted from the following statement:
-'ORIGINAL LINE: appointments.Add(CustomAppointment.CreateCustomAppointment(subjPrefix + "travel", item.ResID, 3, 6, lastInsertedID++));
-				appointments.Add(CustomAppointment.CreateCustomAppointment(subjPrefix & "travel", item.ResID, 3, 6, lastInsertedID))
-				lastInsertedID += 1
-'INSTANT VB WARNING: An assignment within expression was extracted from the following statement:
-'ORIGINAL LINE: appointments.Add(CustomAppointment.CreateCustomAppointment(subjPrefix + "phone call", item.ResID, 0, 10, lastInsertedID++));
-				appointments.Add(CustomAppointment.CreateCustomAppointment(subjPrefix & "phone call", item.ResID, 0, 10, lastInsertedID))
-				lastInsertedID += 1
-			Next item
-			Return appointments
-		End Function
+    Public Module SchedulerDataHelper
 
+        Public Function GetResources() As List(Of DevExpressMvcApplication1.Models.CustomResource)
+            Dim resources As System.Collections.Generic.List(Of DevExpressMvcApplication1.Models.CustomResource) = New System.Collections.Generic.List(Of DevExpressMvcApplication1.Models.CustomResource)()
+            resources.Add(DevExpressMvcApplication1.Models.CustomResource.CreateCustomResource(1, "Max Fowler", System.Drawing.Color.Yellow.ToArgb()))
+            resources.Add(DevExpressMvcApplication1.Models.CustomResource.CreateCustomResource(2, "Nancy Drewmore", System.Drawing.Color.Green.ToArgb()))
+            resources.Add(DevExpressMvcApplication1.Models.CustomResource.CreateCustomResource(3, "Pak Jang", System.Drawing.Color.LightPink.ToArgb()))
+            Return resources
+        End Function
 
-		Public Function GetCompanies() As List(Of Company)
-			If HttpContext.Current.Session("CompaniesList") Is Nothing Then
-				Dim returnedResult As New List(Of Company)()
-				For i As Integer = 0 To 9
-					returnedResult.Add(New Company() With {
-						.CompanyID = i,
-						.CompanyName = "Company " & i.ToString()
-					})
-				Next i
-				HttpContext.Current.Session("CompaniesList") = returnedResult
-			End If
-			Return TryCast(HttpContext.Current.Session("CompaniesList"), List(Of Company))
-		End Function
+        Private myRand As System.Random = New System.Random()
 
-		Public Function GetCompanyContacts(ByVal companyID As Integer) As List(Of CompanyContact)
-			If HttpContext.Current.Session("ContactsList") Is Nothing Then
-				Dim returnedResult As New List(Of CompanyContact)()
-				Dim companies As List(Of Company) = TryCast(HttpContext.Current.Session("CompaniesList"), List(Of Company))
+        Public Function GetAppointments(ByVal resources As System.Collections.Generic.List(Of DevExpressMvcApplication1.Models.CustomResource)) As List(Of DevExpressMvcApplication1.Models.CustomAppointment)
+            Dim appointments As System.Collections.Generic.List(Of DevExpressMvcApplication1.Models.CustomAppointment) = New System.Collections.Generic.List(Of DevExpressMvcApplication1.Models.CustomAppointment)()
+            For Each item As DevExpressMvcApplication1.Models.CustomResource In resources
+                Dim subjPrefix As String = item.Name & "'s "
+                appointments.Add(DevExpressMvcApplication1.Models.CustomAppointment.CreateCustomAppointment(subjPrefix & "meeting", item.ResID, 2, 5, System.Math.Min(System.Threading.Interlocked.Increment(DevExpressMvcApplication1.Helpers.SchedulerDataHelper.lastInsertedID), DevExpressMvcApplication1.Helpers.SchedulerDataHelper.lastInsertedID - 1)))
+                appointments.Add(DevExpressMvcApplication1.Models.CustomAppointment.CreateCustomAppointment(subjPrefix & "travel", item.ResID, 3, 6, System.Math.Min(System.Threading.Interlocked.Increment(DevExpressMvcApplication1.Helpers.SchedulerDataHelper.lastInsertedID), DevExpressMvcApplication1.Helpers.SchedulerDataHelper.lastInsertedID - 1)))
+                appointments.Add(DevExpressMvcApplication1.Models.CustomAppointment.CreateCustomAppointment(subjPrefix & "phone call", item.ResID, 0, 10, System.Math.Min(System.Threading.Interlocked.Increment(DevExpressMvcApplication1.Helpers.SchedulerDataHelper.lastInsertedID), DevExpressMvcApplication1.Helpers.SchedulerDataHelper.lastInsertedID - 1)))
+            Next
 
-				Dim uniqueContactID As Integer = 0
-				For i As Integer = 0 To companies.Count - 1
-					For j As Integer = 0 To 4
-						returnedResult.Add(New CompanyContact() With {
-							.CompanyID = i,
-							.ContactName = "Contact " & j & ", Company " & i,
-							.ContactID = uniqueContactID
-						})
-						uniqueContactID += 1
-					Next j
-				Next i
+            Return appointments
+        End Function
 
-				HttpContext.Current.Session("ContactsList") = returnedResult
-			End If
+        Public Function GetCompanies() As List(Of DevExpressMvcApplication1.Models.Company)
+            If System.Web.HttpContext.Current.Session("CompaniesList") Is Nothing Then
+                Dim returnedResult As System.Collections.Generic.List(Of DevExpressMvcApplication1.Models.Company) = New System.Collections.Generic.List(Of DevExpressMvcApplication1.Models.Company)()
+                For i As Integer = 0 To 10 - 1
+                    returnedResult.Add(New DevExpressMvcApplication1.Models.Company() With {.CompanyID = i, .CompanyName = "Company " & i.ToString()})
+                Next
 
-			Dim contacts As List(Of CompanyContact) = TryCast(HttpContext.Current.Session("ContactsList"), List(Of CompanyContact))
-			Return contacts.Where(Function(cont) cont.CompanyID.Equals(companyID)).ToList()
+                System.Web.HttpContext.Current.Session("CompaniesList") = returnedResult
+            End If
 
-		End Function
+            Return TryCast(System.Web.HttpContext.Current.Session("CompaniesList"), System.Collections.Generic.List(Of DevExpressMvcApplication1.Models.Company))
+        End Function
 
+        Public Function GetCompanyContacts(ByVal companyID As Integer) As List(Of DevExpressMvcApplication1.Models.CompanyContact)
+            If System.Web.HttpContext.Current.Session("ContactsList") Is Nothing Then
+                Dim returnedResult As System.Collections.Generic.List(Of DevExpressMvcApplication1.Models.CompanyContact) = New System.Collections.Generic.List(Of DevExpressMvcApplication1.Models.CompanyContact)()
+                Dim companies As System.Collections.Generic.List(Of DevExpressMvcApplication1.Models.Company) = TryCast(System.Web.HttpContext.Current.Session("CompaniesList"), System.Collections.Generic.List(Of DevExpressMvcApplication1.Models.Company))
+                Dim uniqueContactID As Integer = 0
+                For i As Integer = 0 To companies.Count - 1
+                    For j As Integer = 0 To 5 - 1
+                        returnedResult.Add(New DevExpressMvcApplication1.Models.CompanyContact() With {.CompanyID = i, .ContactName = "Contact " & j & ", Company " & i, .ContactID = uniqueContactID})
+                        uniqueContactID += 1
+                    Next
+                Next
 
+                System.Web.HttpContext.Current.Session("ContactsList") = returnedResult
+            End If
 
-		Public ReadOnly Property DataObject() As SchedulerDataObject
-			Get
-'INSTANT VB NOTE: The local variable dataObject was renamed since Visual Basic will not allow local variables with the same name as their enclosing function or property:
-				Dim dataObject_Renamed As New SchedulerDataObject()
+            Dim contacts As System.Collections.Generic.List(Of DevExpressMvcApplication1.Models.CompanyContact) = TryCast(System.Web.HttpContext.Current.Session("ContactsList"), System.Collections.Generic.List(Of DevExpressMvcApplication1.Models.CompanyContact))
+            Return contacts.Where(Function(cont) cont.CompanyID.Equals(companyID)).ToList(Of DevExpressMvcApplication1.Models.CompanyContact)()
+        End Function
 
+        Public ReadOnly Property DataObject As SchedulerDataObject
+            Get
+                Dim lDataObject As DevExpressMvcApplication1.Models.SchedulerDataObject = New DevExpressMvcApplication1.Models.SchedulerDataObject()
+                If System.Web.HttpContext.Current.Session("ResourcesList") Is Nothing Then
+                    System.Web.HttpContext.Current.Session("ResourcesList") = DevExpressMvcApplication1.Helpers.SchedulerDataHelper.GetResources()
+                End If
 
-				If HttpContext.Current.Session("ResourcesList") Is Nothing Then
-					HttpContext.Current.Session("ResourcesList") = GetResources()
-				End If
-				dataObject_Renamed.Resources = TryCast(HttpContext.Current.Session("ResourcesList"), List(Of CustomResource))
+                lDataObject.Resources = TryCast(System.Web.HttpContext.Current.Session("ResourcesList"), System.Collections.Generic.List(Of DevExpressMvcApplication1.Models.CustomResource))
+                If System.Web.HttpContext.Current.Session("AppointmentsList") Is Nothing Then
+                    System.Web.HttpContext.Current.Session("AppointmentsList") = DevExpressMvcApplication1.Helpers.SchedulerDataHelper.GetAppointments(lDataObject.Resources)
+                End If
 
-				If HttpContext.Current.Session("AppointmentsList") Is Nothing Then
-					HttpContext.Current.Session("AppointmentsList") = GetAppointments(dataObject_Renamed.Resources)
-				End If
-				dataObject_Renamed.Appointments = TryCast(HttpContext.Current.Session("AppointmentsList"), List(Of CustomAppointment))
-				Return dataObject_Renamed
-			End Get
-		End Property
+                lDataObject.Appointments = TryCast(System.Web.HttpContext.Current.Session("AppointmentsList"), System.Collections.Generic.List(Of DevExpressMvcApplication1.Models.CustomAppointment))
+                Return lDataObject
+            End Get
+        End Property
 
-'INSTANT VB NOTE: The field defaultAppointmentStorage was renamed since Visual Basic does not allow fields to have the same name as other class members:
-		Private defaultAppointmentStorage_Renamed As MVCxAppointmentStorage
-		Public ReadOnly Property DefaultAppointmentStorage() As MVCxAppointmentStorage
-			Get
-				If defaultAppointmentStorage_Renamed Is Nothing Then
-					defaultAppointmentStorage_Renamed = CreateDefaultAppointmentStorage()
-				End If
-				Return defaultAppointmentStorage_Renamed
+        Private defaultAppointmentStorageField As DevExpress.Web.Mvc.MVCxAppointmentStorage
 
-			End Get
-		End Property
+        Public ReadOnly Property DefaultAppointmentStorage As MVCxAppointmentStorage
+            Get
+                If DevExpressMvcApplication1.Helpers.SchedulerDataHelper.defaultAppointmentStorageField Is Nothing Then
+                    DevExpressMvcApplication1.Helpers.SchedulerDataHelper.defaultAppointmentStorageField = DevExpressMvcApplication1.Helpers.SchedulerDataHelper.CreateDefaultAppointmentStorage()
+                End If
 
-		Private Function CreateDefaultAppointmentStorage() As MVCxAppointmentStorage
-			Dim appointmentStorage As New MVCxAppointmentStorage()
-			appointmentStorage.AutoRetrieveId = True
-			appointmentStorage.Mappings.AppointmentId = "ID"
-			appointmentStorage.Mappings.Start = "StartTime"
-			appointmentStorage.Mappings.End = "EndTime"
-			appointmentStorage.Mappings.Subject = "Subject"
-			appointmentStorage.Mappings.AllDay = "AllDay"
-			appointmentStorage.Mappings.Description = "Description"
-			appointmentStorage.Mappings.Label = "Label"
-			appointmentStorage.Mappings.Location = "Location"
-			appointmentStorage.Mappings.RecurrenceInfo = "RecurrenceInfo"
-			appointmentStorage.Mappings.ReminderInfo = "ReminderInfo"
-			appointmentStorage.Mappings.ResourceId = "OwnerId"
-			appointmentStorage.Mappings.Status = "Status"
-			appointmentStorage.Mappings.Type = "EventType"
+                Return DevExpressMvcApplication1.Helpers.SchedulerDataHelper.defaultAppointmentStorageField
+            End Get
+        End Property
 
-			appointmentStorage.CustomFieldMappings.Add(New DevExpress.Web.ASPxScheduler.ASPxAppointmentCustomFieldMapping("AppointmentCustomField", "CustomInfo"))
-			appointmentStorage.CustomFieldMappings.Add(New DevExpress.Web.ASPxScheduler.ASPxAppointmentCustomFieldMapping("TimeBeforeStart", "TimeBeforeStart"))
+        Private Function CreateDefaultAppointmentStorage() As MVCxAppointmentStorage
+            Dim appointmentStorage As DevExpress.Web.Mvc.MVCxAppointmentStorage = New DevExpress.Web.Mvc.MVCxAppointmentStorage()
+            appointmentStorage.AutoRetrieveId = True
+            appointmentStorage.Mappings.AppointmentId = "ID"
+            appointmentStorage.Mappings.Start = "StartTime"
+            appointmentStorage.Mappings.[End] = "EndTime"
+            appointmentStorage.Mappings.Subject = "Subject"
+            appointmentStorage.Mappings.AllDay = "AllDay"
+            appointmentStorage.Mappings.Description = "Description"
+            appointmentStorage.Mappings.Label = "Label"
+            appointmentStorage.Mappings.Location = "Location"
+            appointmentStorage.Mappings.RecurrenceInfo = "RecurrenceInfo"
+            appointmentStorage.Mappings.ReminderInfo = "ReminderInfo"
+            appointmentStorage.Mappings.ResourceId = "OwnerId"
+            appointmentStorage.Mappings.Status = "Status"
+            appointmentStorage.Mappings.Type = "EventType"
+            appointmentStorage.CustomFieldMappings.Add(New DevExpress.Web.ASPxScheduler.ASPxAppointmentCustomFieldMapping("AppointmentCustomField", "CustomInfo"))
+            appointmentStorage.CustomFieldMappings.Add(New DevExpress.Web.ASPxScheduler.ASPxAppointmentCustomFieldMapping("TimeBeforeStart", "TimeBeforeStart"))
+            appointmentStorage.CustomFieldMappings.Add(New DevExpress.Web.ASPxScheduler.ASPxAppointmentCustomFieldMapping("AppointmentCompany", "CompanyID"))
+            appointmentStorage.CustomFieldMappings.Add(New DevExpress.Web.ASPxScheduler.ASPxAppointmentCustomFieldMapping("AppointmentContact", "ContactID"))
+            Return appointmentStorage
+        End Function
 
-			appointmentStorage.CustomFieldMappings.Add(New DevExpress.Web.ASPxScheduler.ASPxAppointmentCustomFieldMapping("AppointmentCompany", "CompanyID"))
-			appointmentStorage.CustomFieldMappings.Add(New DevExpress.Web.ASPxScheduler.ASPxAppointmentCustomFieldMapping("AppointmentContact", "ContactID"))
+        Private defaultResourceStorageField As DevExpress.Web.Mvc.MVCxResourceStorage
 
-			Return appointmentStorage
-		End Function
+        Public ReadOnly Property DefaultResourceStorage As MVCxResourceStorage
+            Get
+                If DevExpressMvcApplication1.Helpers.SchedulerDataHelper.defaultResourceStorageField Is Nothing Then
+                    DevExpressMvcApplication1.Helpers.SchedulerDataHelper.defaultResourceStorageField = DevExpressMvcApplication1.Helpers.SchedulerDataHelper.CreateDefaultResourceStorage()
+                End If
 
-'INSTANT VB NOTE: The field defaultResourceStorage was renamed since Visual Basic does not allow fields to have the same name as other class members:
-		Private defaultResourceStorage_Renamed As MVCxResourceStorage
-		Public ReadOnly Property DefaultResourceStorage() As MVCxResourceStorage
-			Get
-				If defaultResourceStorage_Renamed Is Nothing Then
-					defaultResourceStorage_Renamed = CreateDefaultResourceStorage()
-				End If
-				Return defaultResourceStorage_Renamed
+                Return DevExpressMvcApplication1.Helpers.SchedulerDataHelper.defaultResourceStorageField
+            End Get
+        End Property
 
-			End Get
-		End Property
+        Private Function CreateDefaultResourceStorage() As MVCxResourceStorage
+            Dim resourceStorage As DevExpress.Web.Mvc.MVCxResourceStorage = New DevExpress.Web.Mvc.MVCxResourceStorage()
+            resourceStorage.Mappings.ResourceId = "ResID"
+            resourceStorage.Mappings.Caption = "Name"
+            resourceStorage.Mappings.Color = "Color"
+            Return resourceStorage
+        End Function
 
-		Private Function CreateDefaultResourceStorage() As MVCxResourceStorage
-			Dim resourceStorage As New MVCxResourceStorage()
-			resourceStorage.Mappings.ResourceId = "ResID"
-			resourceStorage.Mappings.Caption = "Name"
-			resourceStorage.Mappings.Color = "Color"
-			Return resourceStorage
-		End Function
+        Public Function GetSchedulerSettings() As SchedulerSettings
+            Return DevExpressMvcApplication1.Helpers.SchedulerDataHelper.GetSchedulerSettings(Nothing)
+        End Function
 
-		Public Function GetSchedulerSettings() As SchedulerSettings
-			Return GetSchedulerSettings(Nothing)
-		End Function
+        Private Function CreateAppointmentRecurrenceFormSettings(ByVal container As DevExpress.Web.ASPxScheduler.AppointmentFormTemplateContainer) As AppointmentRecurrenceFormSettings
+            Return New DevExpress.Web.Mvc.AppointmentRecurrenceFormSettings With {.Name = "appointmentRecurrenceForm", .Width = System.Web.UI.WebControls.Unit.Percentage(100), .IsRecurring = container.Appointment.IsRecurring, .DayNumber = container.RecurrenceDayNumber, .[End] = container.RecurrenceEnd, .Month = container.RecurrenceMonth, .OccurrenceCount = container.RecurrenceOccurrenceCount, .Periodicity = container.RecurrencePeriodicity, .RecurrenceRange = container.RecurrenceRange, .Start = container.Start, .WeekDays = container.RecurrenceWeekDays, .WeekOfMonth = container.RecurrenceWeekOfMonth, .RecurrenceType = container.RecurrenceType, .IsFormRecreated = container.IsFormRecreated}
+        End Function
 
-		Private Function CreateAppointmentRecurrenceFormSettings(ByVal container As DevExpress.Web.ASPxScheduler.AppointmentFormTemplateContainer) As AppointmentRecurrenceFormSettings
-			Return New AppointmentRecurrenceFormSettings With {
-				.Name = "appointmentRecurrenceForm",
-				.Width = System.Web.UI.WebControls.Unit.Percentage(100),
-				.IsRecurring = container.Appointment.IsRecurring,
-				.DayNumber = container.RecurrenceDayNumber,
-				.End = container.RecurrenceEnd,
-				.Month = container.RecurrenceMonth,
-				.OccurrenceCount = container.RecurrenceOccurrenceCount,
-				.Periodicity = container.RecurrencePeriodicity,
-				.RecurrenceRange = container.RecurrenceRange,
-				.Start = container.Start,
-				.WeekDays = container.RecurrenceWeekDays,
-				.WeekOfMonth = container.RecurrenceWeekOfMonth,
-				.RecurrenceType = container.RecurrenceType,
-				.IsFormRecreated = container.IsFormRecreated
-			}
-		End Function
+        <Extension()>
+        Public Function GetSchedulerSettings(ByVal customHtml As System.Web.Mvc.HtmlHelper) As SchedulerSettings
+            Dim settings As DevExpress.Web.Mvc.SchedulerSettings = New DevExpress.Web.Mvc.SchedulerSettings()
+            settings.Name = "scheduler"
+            settings.InitClientAppointment = Sub(sched, evargs)
+                evargs.Properties.Add(DevExpress.Web.ASPxScheduler.ClientSideAppointmentFieldNames.AppointmentType, evargs.Appointment.Type)
+                evargs.Properties.Add(DevExpress.Web.ASPxScheduler.ClientSideAppointmentFieldNames.Subject, evargs.Appointment.Subject)
+            End Sub
+            settings.PopupMenuShowing = Sub(sched, evargs)
+                If evargs.Menu.MenuId = DevExpress.XtraScheduler.SchedulerMenuItemId.AppointmentMenu Then
+                    evargs.Menu.ClientSideEvents.PopUp = "OnAppointmentMenuPopup"
+                End If
+            End Sub
+            settings.CallbackRouteValues = New With {.Controller = "Home", .Action = "SchedulerPartial"}
+            settings.EditAppointmentRouteValues = New With {.Controller = "Home", .Action = "EditAppointment"}
+            settings.CustomActionRouteValues = New With {.Controller = "Home", .Action = "CustomCallBackAction"}
+            settings.Storage.Appointments.Assign(DevExpressMvcApplication1.Helpers.SchedulerDataHelper.DefaultAppointmentStorage)
+            settings.Storage.Resources.Assign(DevExpressMvcApplication1.Helpers.SchedulerDataHelper.DefaultResourceStorage)
+            settings.Storage.EnableReminders = True
+            settings.GroupType = DevExpress.XtraScheduler.SchedulerGroupType.Resource
+            settings.Views.DayView.Styles.ScrollAreaHeight = 400
+            settings.Start = System.DateTime.Now
+            settings.AppointmentFormShowing = Sub(sender, e)
+                Dim scheduler = TryCast(sender, DevExpress.Web.Mvc.MVCxScheduler)
+                If scheduler IsNot Nothing Then e.Container = New DevExpressMvcApplication1.Models.CustomAppointmentTemplateContainer(scheduler)
+            End Sub
+            settings.OptionsForms.RecurrenceFormName = "appointmentRecurrenceForm"
+            settings.OptionsForms.SetAppointmentFormTemplateContent(Sub(c)
+                Dim container = CType(c, DevExpressMvcApplication1.Models.CustomAppointmentTemplateContainer)
+                Dim modelAppointment As DevExpressMvcApplication1.Models.ModelAppointment = New DevExpressMvcApplication1.Models.ModelAppointment() With {.ID = If(container.Appointment.Id Is Nothing, -1, CInt(container.Appointment.Id)), .Subject = container.Appointment.Subject, .Location = container.Appointment.Location, .StartTime = container.Appointment.Start, .EndTime = container.Appointment.[End], .AllDay = container.Appointment.AllDay, .Description = container.Appointment.Description, .EventType = CInt(container.Appointment.Type), .Status = System.Convert.ToInt32(container.Appointment.StatusKey), .Label = System.Convert.ToInt32(container.Appointment.LabelKey), .CustomInfo = container.CustomInfo, .CompanyID = container.CompanyID, .ContactID = container.ContactID, .HasReminder = container.Appointment.HasReminder, .Reminder = container.Appointment.Reminder, .OwnerId = System.Convert.ToInt32(container.Appointment.ResourceId)}
+                customHtml.ViewBag.DeleteButtonEnabled = container.CanDeleteAppointment
+                TryCast(container.ResourceDataSource, DevExpress.Web.ListEditItemCollection).RemoveAt(0)
+                customHtml.ViewBag.ResourceDataSource = container.ResourceDataSource
+                customHtml.ViewBag.StatusDataSource = container.StatusDataSource
+                customHtml.ViewBag.LabelDataSource = container.LabelDataSource
+                customHtml.ViewBag.AppointmentRecurrenceFormSettings = DevExpressMvcApplication1.Helpers.SchedulerDataHelper.CreateAppointmentRecurrenceFormSettings(container)
+                customHtml.ViewBag.ReminderDataSource = container.ReminderDataSource
+                customHtml.ViewBag.IsBaseAppointment = container.Appointment.Type = DevExpress.XtraScheduler.AppointmentType.Normal OrElse container.Appointment.Type = DevExpress.XtraScheduler.AppointmentType.Pattern
+                customHtml.ViewBag.CompaniesDataSource = DevExpressMvcApplication1.Helpers.SchedulerDataHelper.GetCompanies()
+                customHtml.ViewBag.ContactsDataSource = DevExpressMvcApplication1.Helpers.SchedulerDataHelper.GetCompanyContacts(container.CompanyID)
+                customHtml.RenderPartial("CustomAppointmentFormPartial", modelAppointment)
+            End Sub)
+            Return settings
+        End Function
 
-		<System.Runtime.CompilerServices.Extension> _
-		Public Function GetSchedulerSettings(ByVal customHtml As System.Web.Mvc.HtmlHelper) As SchedulerSettings
-			Dim settings As New SchedulerSettings()
-			settings.Name = "scheduler"
+        Private lastInsertedID As Integer = 0
 
-			settings.InitClientAppointment = Sub(sched, evargs)
-				evargs.Properties.Add(DevExpress.Web.ASPxScheduler.ClientSideAppointmentFieldNames.AppointmentType, evargs.Appointment.Type)
-				evargs.Properties.Add(DevExpress.Web.ASPxScheduler.ClientSideAppointmentFieldNames.Subject, evargs.Appointment.Subject)
-			End Sub
+        Public Sub CorrectReminderInfo(ByVal appt As DevExpressMvcApplication1.Models.CustomAppointment)
+            If Not Equals(appt.ReminderInfo, "") AndAlso Not Equals(appt.TimeBeforeStart, "") Then
+                Dim reminders As DevExpress.XtraScheduler.Xml.ReminderInfoCollection = New DevExpress.XtraScheduler.Xml.ReminderInfoCollection()
+                Call DevExpress.XtraScheduler.Xml.ReminderInfoCollectionXmlPersistenceHelper.ObjectFromXml(reminders, appt.ReminderInfo)
+                For i As Integer = 0 To reminders.Count - 1
+                    reminders(CInt((i))).TimeBeforeStart = System.TimeSpan.Parse(appt.TimeBeforeStart)
+                    reminders(CInt((i))).AlertTime = appt.StartTime.Subtract(reminders(CInt((i))).TimeBeforeStart)
+                Next
 
-			settings.PopupMenuShowing = Sub(sched, evargs)
-				If evargs.Menu.MenuId = SchedulerMenuItemId.AppointmentMenu Then
-					evargs.Menu.ClientSideEvents.PopUp = "OnAppointmentMenuPopup"
-				End If
-			End Sub
+                Dim helper As DevExpress.XtraScheduler.Xml.ReminderInfoCollectionXmlPersistenceHelper = New DevExpress.XtraScheduler.Xml.ReminderInfoCollectionXmlPersistenceHelper(reminders)
+                appt.ReminderInfo = helper.ToXml()
+            End If
+        End Sub
 
-			settings.CallbackRouteValues = New With {
-				Key .Controller = "Home",
-				Key .Action = "SchedulerPartial"
-			}
-			settings.EditAppointmentRouteValues = New With {
-				Key .Controller = "Home",
-				Key .Action = "EditAppointment"
-			}
-			settings.CustomActionRouteValues = New With {
-				Key .Controller = "Home",
-				Key .Action = "CustomCallBackAction"
-			}
+        ' CRUD operations implementation
+        Public Sub InsertAppointments(ByVal appts As DevExpressMvcApplication1.Models.CustomAppointment())
+            If appts.Length = 0 Then Return
+            Dim appointmnets As System.Collections.Generic.List(Of DevExpressMvcApplication1.Models.CustomAppointment) = TryCast(System.Web.HttpContext.Current.Session("AppointmentsList"), System.Collections.Generic.List(Of DevExpressMvcApplication1.Models.CustomAppointment))
+            For i As Integer = 0 To appts.Length - 1
+                If appts(i) IsNot Nothing Then
+                    appts(CInt((i))).ID = System.Math.Min(System.Threading.Interlocked.Increment(DevExpressMvcApplication1.Helpers.SchedulerDataHelper.lastInsertedID), DevExpressMvcApplication1.Helpers.SchedulerDataHelper.lastInsertedID - 1)
+                    Call DevExpressMvcApplication1.Helpers.SchedulerDataHelper.CorrectReminderInfo(appts(i))
+                    appointmnets.Add(appts(i))
+                End If
+            Next
+        End Sub
 
-			settings.Storage.Appointments.Assign(SchedulerDataHelper.DefaultAppointmentStorage)
-			settings.Storage.Resources.Assign(SchedulerDataHelper.DefaultResourceStorage)
+        Public Sub UpdateAppointments(ByVal appts As DevExpressMvcApplication1.Models.CustomAppointment())
+            If appts.Length = 0 Then Return
+            Dim appointmnets As System.Collections.Generic.List(Of DevExpressMvcApplication1.Models.CustomAppointment) = TryCast(System.Web.HttpContext.Current.Session("AppointmentsList"), System.Collections.Generic.List(Of DevExpressMvcApplication1.Models.CustomAppointment))
+            For i As Integer = 0 To appts.Length - 1
+                Dim sourceObject As DevExpressMvcApplication1.Models.CustomAppointment = appointmnets.First(Of DevExpressMvcApplication1.Models.CustomAppointment)(Function(apt) apt.ID = appts(CInt((i))).ID)
+                appts(CInt((i))).ID = sourceObject.ID
+                appointmnets.Remove(sourceObject)
+                Call DevExpressMvcApplication1.Helpers.SchedulerDataHelper.CorrectReminderInfo(appts(i))
+                appointmnets.Add(appts(i))
+            Next
+        End Sub
 
-			settings.Storage.EnableReminders = True
-			settings.GroupType = SchedulerGroupType.Resource
-			settings.Views.DayView.Styles.ScrollAreaHeight = 400
-			settings.Start = DateTime.Now
-
-			settings.AppointmentFormShowing = Sub(sender, e)
-				Dim scheduler = TryCast(sender, MVCxScheduler)
-				If scheduler IsNot Nothing Then
-					e.Container = New CustomAppointmentTemplateContainer(scheduler)
-				End If
-			End Sub
-
-			settings.OptionsForms.RecurrenceFormName = "appointmentRecurrenceForm"
-
-			settings.OptionsForms.SetAppointmentFormTemplateContent(Sub(c)
-				Dim container = CType(c, CustomAppointmentTemplateContainer)
-				Dim modelAppointment As New ModelAppointment() With {
-					.ID = If(container.Appointment.Id Is Nothing, -1, CInt(Math.Truncate(container.Appointment.Id))),
-					.Subject = container.Appointment.Subject,
-					.Location = container.Appointment.Location,
-					.StartTime = container.Appointment.Start,
-					.EndTime = container.Appointment.End,
-					.AllDay = container.Appointment.AllDay,
-					.Description = container.Appointment.Description,
-					.EventType = CInt(Math.Truncate(container.Appointment.Type)),
-					.Status = Convert.ToInt32(container.Appointment.StatusKey),
-					.Label = Convert.ToInt32(container.Appointment.LabelKey),
-					.CustomInfo = container.CustomInfo,
-					.CompanyID = container.CompanyID,
-					.ContactID = container.ContactID,
-					.HasReminder = container.Appointment.HasReminder,
-					.Reminder = container.Appointment.Reminder,
-					.OwnerId = Convert.ToInt32(container.Appointment.ResourceId)
-				}
-				customHtml.ViewBag.DeleteButtonEnabled = container.CanDeleteAppointment
-				TryCast(container.ResourceDataSource, ListEditItemCollection).RemoveAt(0)
-				customHtml.ViewBag.ResourceDataSource = container.ResourceDataSource
-				customHtml.ViewBag.StatusDataSource = container.StatusDataSource
-				customHtml.ViewBag.LabelDataSource = container.LabelDataSource
-				customHtml.ViewBag.AppointmentRecurrenceFormSettings = CreateAppointmentRecurrenceFormSettings(container)
-				customHtml.ViewBag.ReminderDataSource = container.ReminderDataSource
-				customHtml.ViewBag.IsBaseAppointment = container.Appointment.Type = AppointmentType.Normal OrElse container.Appointment.Type = AppointmentType.Pattern
-				customHtml.ViewBag.CompaniesDataSource = GetCompanies()
-				customHtml.ViewBag.ContactsDataSource = GetCompanyContacts(container.CompanyID)
-				customHtml.RenderPartial("CustomAppointmentFormPartial", modelAppointment)
-			End Sub)
-			Return settings
-		End Function
-
-		Private lastInsertedID As Integer = 0
-
-		Public Sub CorrectReminderInfo(ByVal appt As CustomAppointment)
-			If appt.ReminderInfo <> "" AndAlso appt.TimeBeforeStart <> "" Then
-				Dim reminders As New ReminderInfoCollection()
-				ReminderInfoCollectionXmlPersistenceHelper.ObjectFromXml(reminders, appt.ReminderInfo)
-
-				For i As Integer = 0 To reminders.Count - 1
-					reminders(i).TimeBeforeStart = TimeSpan.Parse(appt.TimeBeforeStart)
-					reminders(i).AlertTime = appt.StartTime.Subtract(reminders(i).TimeBeforeStart)
-				Next i
-				Dim helper As New ReminderInfoCollectionXmlPersistenceHelper(reminders)
-				appt.ReminderInfo = helper.ToXml()
-			End If
-		End Sub
-
-		' CRUD operations implementation
-		Public Sub InsertAppointments(ByVal appts() As CustomAppointment)
-			If appts.Length = 0 Then
-				Return
-			End If
-
-			Dim appointmnets As List(Of CustomAppointment) = TryCast(HttpContext.Current.Session("AppointmentsList"), List(Of CustomAppointment))
-			For i As Integer = 0 To appts.Length - 1
-				If appts(i) IsNot Nothing Then
-'INSTANT VB WARNING: An assignment within expression was extracted from the following statement:
-'ORIGINAL LINE: appts[i].ID = lastInsertedID++;
-					appts(i).ID = lastInsertedID
-					lastInsertedID += 1
-					CorrectReminderInfo(appts(i))
-					appointmnets.Add(appts(i))
-				End If
-			Next i
-		End Sub
-
-		Public Sub UpdateAppointments(ByVal appts() As CustomAppointment)
-			If appts.Length = 0 Then
-				Return
-			End If
-
-			Dim appointmnets As List(Of CustomAppointment) = TryCast(System.Web.HttpContext.Current.Session("AppointmentsList"), List(Of CustomAppointment))
-			For i As Integer = 0 To appts.Length - 1
-				Dim sourceObject As CustomAppointment = appointmnets.First(Function(apt) apt.ID = appts(i).ID)
-				appts(i).ID = sourceObject.ID
-				appointmnets.Remove(sourceObject)
-
-				CorrectReminderInfo(appts(i))
-				appointmnets.Add(appts(i))
-			Next i
-		End Sub
-
-		Public Sub RemoveAppointments(ByVal appts() As CustomAppointment)
-			If appts.Length = 0 Then
-				Return
-			End If
-
-			Dim appointmnets As List(Of CustomAppointment) = TryCast(HttpContext.Current.Session("AppointmentsList"), List(Of CustomAppointment))
-			For i As Integer = 0 To appts.Length - 1
-				Dim sourceObject As CustomAppointment = appointmnets.First(Function(apt) apt.ID = appts(i).ID)
-				appointmnets.Remove(sourceObject)
-			Next i
-		End Sub
-	End Module
+        Public Sub RemoveAppointments(ByVal appts As DevExpressMvcApplication1.Models.CustomAppointment())
+            If appts.Length = 0 Then Return
+            Dim appointmnets As System.Collections.Generic.List(Of DevExpressMvcApplication1.Models.CustomAppointment) = TryCast(System.Web.HttpContext.Current.Session("AppointmentsList"), System.Collections.Generic.List(Of DevExpressMvcApplication1.Models.CustomAppointment))
+            For i As Integer = 0 To appts.Length - 1
+                Dim sourceObject As DevExpressMvcApplication1.Models.CustomAppointment = appointmnets.First(Of DevExpressMvcApplication1.Models.CustomAppointment)(Function(apt) apt.ID = appts(CInt((i))).ID)
+                appointmnets.Remove(sourceObject)
+            Next
+        End Sub
+    End Module
 End Namespace
