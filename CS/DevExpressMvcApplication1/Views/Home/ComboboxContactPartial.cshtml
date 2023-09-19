@@ -1,8 +1,0 @@
-﻿@Html.DevExpress().ComboBox(settings => {
-    settings.Name = "ContactID";
-    settings.CallbackRouteValues = new { Controller = "Home", Action = "ContactPartial" };
-    settings.Properties.ValueType = typeof(int);
-    settings.Properties.TextField = "ContactName";
-    settings.Properties.ValueField = "ContactID";
-    settings.Properties.ClientSideEvents.BeginCallback = "function(s, e) { e.customArgs['CompanyID'] = CompanyID.GetValue(); }";
-}).BindList(ViewBag.ContactsDataSource).Bind(Model).GetHtml()
